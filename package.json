@@ -1,0 +1,33 @@
+{
+  "name": "twitchbots-stats",
+  "version": "1.0.0",
+  "description": "Analyses the bot usernames",
+  "main": "index.js",
+  "dependencies": {
+    "cli-table": "^0.3.1",
+    "colors": "^1.1.2",
+    "combination-generator": "^0.1.0",
+    "mz": "^2.4.0",
+    "twitchbots-node": "^1.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.4.0",
+    "eslint-plugin-freaktechnik": "^1.4.0"
+  },
+  "scripts": {
+    "test": "eslint index.js"
+  },
+  "keywords": [
+    "twitchbots",
+    "word",
+    "frequency",
+    "stats",
+    "twitch",
+    "username"
+  ],
+  "author": "Martin Giger (https://humanoids.be)",
+  "license": "MIT",
+  "engines": {
+    "node": ">= 6.0.0"
+  }
+}
