@@ -35,7 +35,7 @@ const minLength = 5;
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const letters = alphabet.split('');
 const minOccurences = 3;
-const startWordLength = minLength - 1;
+const startWordLength = 2;
 
 getBots().then((bots) => {
     const findings = {};
@@ -44,23 +44,13 @@ getBots().then((bots) => {
     // Two bots can't have the same name, so at least a letter is probably different.
     const maxLength = Math.max.apply(Math, names.map((n) => n.length)) - 1;
 
-    const wordCount = Math.pow(letters.length, startWordLength);
-
     console.log("Looking for words between", colors.blue(minLength), "and", colors.blue(maxLength), "characters.");
 
     info("Generating base words");
-    console.log("This will only take about", colors.blue(Math.round(wordCount * Math.sqrt(names.length))), "iteration steps");
 
     const foundWordsByLength = (new Array(startWordLength)).fill(null);
-    const nameCheck = (w, n) => {
-        const i = n.indexOf(w);
-        return i != -1 && i < n.length - w.length;
-    };
-    const generatedWords = generator(letters, startWordLength, startWordLength)
-        .filter((w) => names.some(nameCheck.bind(null, w)));
+    const generatedWords = generator(letters, startWordLength, startWordLength);
     foundWordsByLength.push(generatedWords);
-
-    console.log("Words to start with:", colors.blue(generatedWords.length), "(out of", colors.blue(wordCount), "possible words)");
 
     let eligibleNames, futureNames, futureEligibleNames, words, futureWords;
 
@@ -68,18 +58,22 @@ getBots().then((bots) => {
     console.log("This will only take about", colors.blue(Math.round(Math.log(maxLength - minLength) * wordCount * Math.sqrt(names.length))), "iteration steps");
 
     const filterEligibleNames = (word, n) => n.includes(word);
+    const getEligibleNames = (base) => Array.isArray(eligibleNames) ? eligibleNames : eligibleNames[base];
+    const getEligibleNamesLength = () => Array.isArray(eligibleNames) ? eligibleNames.length : Object.keys(eligibleNames).length;
     const lttrs = (b, letter) => {
         const word = b + letter;
-        futureNames = eligibleNames.filter(filterEligibleNames.bind(null, word));
+        futureNames = getEligibleNames(b).filter(filterEligibleNames.bind(null, word));
         const count = futureNames.length;
         if(count > minOccurences) {
-            findings[word] = count;
+            if(word.length >= minLength) {
+                findings[word] = count;
+            }
             if(!Array.isArray(foundWordsByLength[word.length])) {
                 foundWordsByLength[l] = [];
             }
             foundWordsByLength[word.length].push(word);
             futureWords.push(word);
-            futureEligibleNames = futureEligibleNames.concat(futureNames);
+            futureEligibleNames[word] = futureEligibleNames.concat(futureNames);
         }
     };
     const wrds = (b) => {
@@ -88,8 +82,8 @@ getBots().then((bots) => {
     for(let word of foundWordsByLength[minLength - 1]) {
         eligibleNames = names;
         words = [ word ];
-        while(eligibleNames.length > 0 && words.length > 0) {
-            futureEligibleNames = [];
+        while(getEligibleNamesLength() > 0 && words.length > 0) {
+            futureEligibleNames = {};
             futureWords = [];
             words.forEach(wrds);
             eligibleNames = futureEligibleNames;
@@ -104,7 +98,9 @@ getBots().then((bots) => {
         const word = b + letter;
         const count = eligibleNames.reduce(countOccurences.bind(null, word), 0);
         if(count > minOccurences) {
-            findings[word] = count;
+            if(word.length >= minLength) {
+                findings[word] = count;
+            }
             foundWordsByLength[l].push(word);
         }
     };
@@ -112,7 +108,7 @@ getBots().then((bots) => {
         foundWordsByLength[l - 1].forEach(bw.bind(null, l, letter));
     };
 
-    for(let l = minLength; l <= maxLength && foundWordsByLength[l - 1].length > 0; ++l) {
+    for(let l = startWordLength + 1; l <= maxLength && foundWordsByLength[l - 1].length > 0; ++l) {
         foundWordsByLength[l] = [];
         // Remove all names that are shorter than the length we're looking for.
         eligibleNames = eligibleNames.filter(filterNames.bind(null, l));
