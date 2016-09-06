@@ -62,13 +62,43 @@ getBots().then((bots) => {
 
     console.log("Words to start with:", colors.blue(generatedWords.length), "(out of", colors.blue(wordCount), "possible words)");
 
-    let eligibleNames = names;
+    let eligibleNames, futureNames, futureEligibleNames, words, futureWords;
 
     info("Analysing word frequency");
     console.log("This will only take about", colors.blue(Math.round(Math.log(maxLength - minLength) * wordCount * Math.sqrt(names.length))), "iteration steps");
 
+    const filterEligibleNames = (word, n) => n.includes(word);
+    const lttrs = (b, letter) => {
+        const word = b + letter;
+        futureNames = eligibleNames.filter(filterEligibleNames.bind(null, word));
+        const count = futureNames.length;
+        if(count > minOccurences) {
+            findings[word] = count;
+            if(!Array.isArray(foundWordsByLength[word.length])) {
+                foundWordsByLength[l] = [];
+            }
+            foundWordsByLength[word.length].push(word);
+            futureWords.push(word);
+            futureEligibleNames = futureEligibleNames.concat(futureNames);
+        }
+    };
+    const wrds = (b) => {
+        letters.forEach(lttrs.bind(null, b));
+    };
+    for(let word of foundWordsByLength[minLength - 1]) {
+        eligibleNames = names;
+        words = [ word ];
+        while(eligibleNames.length > 0 && futureWords.length > 0) {
+            futureEligibleNames = [];
+            futureWords = [];
+            words.forEach(wrds);
+            eligibleNames = futureEligibleNames;
+            words = futureWords;
+        }
+    }
+
     // Functions to use within iterations
-    const filterNames = (l, n) => n.length >= l;
+    /*const filterNames = (l, n) => n.length >= l;
     const countOccurences = (word, p, c) => p + (c.includes(word) ? 1 : 0);
     const bw = (l, letter, b) => {
         const word = b + letter;
@@ -95,7 +125,7 @@ getBots().then((bots) => {
             // No more words to be found, we're done here.
             break;
         }
-    }
+    }*/
 
     // Take out shorter strings with same occurence count as longer string that
     // they are a substring of.
