@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "cli-table": "^0.3.1",
+    "co": "^4.6.0",
     "colors": "^1.1.2",
     "combination-generator": "^0.1.0",
     "mz": "^2.4.0",
@@ -29,5 +30,12 @@
   "license": "MIT",
   "engines": {
     "node": ">= 6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/freaktechnik/twitchbots-stats.git"
+  },
+  "bugs": {
+    "url": "https://github.com/freaktechnik/twitchbots-stats/issues"
   }
 }

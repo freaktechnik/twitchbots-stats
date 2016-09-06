@@ -5,29 +5,26 @@ const generator = require("combination-generator/generator");
 const Table = require("cli-table");
 const colors = require("colors/safe");
 const fs = require("mz/fs");
+const co = require("co");
 
 const cacheFile = "bots.json";
 
 const info = (str) => console.log(colors.grey(str + "..."));
 
-const getBots = () => {
-    return fs.exists(cacheFile).then((exists) => {
-        if(exists) {
-            info("Loading from cached file");
-            return fs.readFile(cacheFile, 'utf8').then((contents) => {
-                return JSON.parse(contents);
-            });
-        }
-        else {
-            info("Fetching from the twitchbots.info API");
-            return twitchbots.getAllBots().then((bots) => {
-                return fs.writeFile(cacheFile, JSON.stringify(bots)).then(() => {
-                    return bots;
-                });
-            });
-        }
-    });
-};
+const getBots = co.wrap(function* () {
+    const exists = yield fs.exists(cacheFile);
+    if(exists) {
+        info("Loading from cached file");
+        const contents = yield fs.readFile(cacheFile, 'utf8');
+        return JSON.parse(contents);
+    }
+    else {
+        info("Fetching from the twitchbots.info API");
+        const bots = yield twitchbots.getAllBots();
+        yield fs.writeFile(cacheFile, JSON.stringify(bots));
+        return bots;
+    }
+});
 
 info("Loading all bots from twitchbots.info");
 
@@ -44,13 +41,13 @@ getBots().then((bots) => {
 
     // Two bots can't have the same name, so at least a letter is probably different.
     const maxLength = Math.max.apply(Math, names.map((n) => n.length)) - 1;
-    
+
     const wordCount = Math.pow(letters.length, startWordLength);
 
     console.log("Looking for words between", colors.blue(minLength), "and", colors.blue(maxLength), "characters.");
 
     info("Generating base words");
-    info("Don't worry, it won't take long, just about "+colors.blue(Math.round(wordCount * Math.sqrt(names.length)))+" iteration steps");
+    console.log("This will only take about", colors.blue(Math.round(wordCount * Math.sqrt(names.length))), "iteration steps");
 
     const foundWordsByLength = (new Array(startWordLength)).fill(null);
     const nameCheck = (w, n) => {
@@ -66,6 +63,7 @@ getBots().then((bots) => {
     let eligibleNames = names;
 
     info("Analysing word frequency");
+    console.log("This will only take about", colors.blue(Math.round(Math.log(maxLength - minLength) * wordCount * Math.sqrt(names.length))), "iteration steps");
 
     // Functions to use within iterations
     const filterNames = (l, n) => n.length >= l;
