@@ -55,7 +55,6 @@ getBots().then((bots) => {
     let eligibleNames, futureNames, futureEligibleNames, words, futureWords;
 
     info("Analysing word frequency");
-    console.log("This will only take about", colors.blue(Math.round(Math.log(maxLength - minLength) * wordCount * Math.sqrt(names.length))), "iteration steps");
 
     const filterEligibleNames = (word, n) => n.includes(word);
     const getEligibleNames = (base) => Array.isArray(eligibleNames) ? eligibleNames : eligibleNames[base];
