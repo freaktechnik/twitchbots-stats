@@ -88,7 +88,7 @@ getBots().then((bots) => {
     for(let word of foundWordsByLength[minLength - 1]) {
         eligibleNames = names;
         words = [ word ];
-        while(eligibleNames.length > 0 && futureWords.length > 0) {
+        while(eligibleNames.length > 0 && words.length > 0) {
             futureEligibleNames = [];
             futureWords = [];
             words.forEach(wrds);
