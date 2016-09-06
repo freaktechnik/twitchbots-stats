@@ -78,7 +78,7 @@ getBots().then((bots) => {
     const wrds = (b) => {
         letters.forEach(lttrs.bind(null, b));
     };
-    for(let word of foundWordsByLength[startWordLength]) {
+    foundWordsByLength[startWordLength].forEach((word) => {
         eligibleNames = names;
         words = [ word ];
         while(getEligibleNamesLength() > 0 && words.length > 0) {
@@ -88,7 +88,7 @@ getBots().then((bots) => {
             eligibleNames = futureEligibleNames;
             words = futureWords;
         }
-    }
+    });
 
     // Functions to use within iterations
     /*const filterNames = (l, n) => n.length >= l;
