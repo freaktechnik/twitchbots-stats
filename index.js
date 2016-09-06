@@ -79,7 +79,7 @@ getBots().then((bots) => {
     const wrds = (b) => {
         letters.forEach(lttrs.bind(null, b));
     };
-    for(let word of foundWordsByLength[startWordLength - 1]) {
+    for(let word of foundWordsByLength[startWordLength]) {
         eligibleNames = names;
         words = [ word ];
         while(getEligibleNamesLength() > 0 && words.length > 0) {
