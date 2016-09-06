@@ -72,7 +72,7 @@ getBots().then((bots) => {
             }
             foundWordsByLength[word.length].push(word);
             futureWords.push(word);
-            futureEligibleNames[word] = futureEligibleNames.concat(futureNames);
+            futureEligibleNames[word] = futureNames;
         }
     };
     const wrds = (b) => {
