@@ -69,7 +69,7 @@ getBots().then((bots) => {
                 findings[word] = count;
             }
             if(!Array.isArray(foundWordsByLength[word.length])) {
-                foundWordsByLength[l] = [];
+                foundWordsByLength[word.length] = [];
             }
             foundWordsByLength[word.length].push(word);
             futureWords.push(word);
