@@ -7,6 +7,8 @@ const colors = require("colors/safe");
 const fs = require("mz/fs");
 const co = require("co");
 
+const start = Date.now();
+
 const cacheFile = "bots.json";
 
 const info = (str) => console.log(colors.grey(str + "..."));
@@ -120,4 +122,5 @@ getBots().then((bots) => {
     table.push(...sortedResults.map((n) => [ n, findings[n], ((findings[n] / bots.length) * 100).toFixed(2) + "%" ]));
 
     console.log(table.toString());
+    console.log("And it only took", colors.blue(Math.floor((Date.now() - start) / 1000)), "seconds to get here");
 });
