@@ -90,41 +90,10 @@ getBots().then((bots) => {
         }
     });
 
-    // Functions to use within iterations
-    /*const filterNames = (l, n) => n.length >= l;
-    const countOccurences = (word, p, c) => p + (c.includes(word) ? 1 : 0);
-    const bw = (l, letter, b) => {
-        const word = b + letter;
-        const count = eligibleNames.reduce(countOccurences.bind(null, word), 0);
-        if(count > minOccurences) {
-            if(word.length >= minLength) {
-                findings[word] = count;
-            }
-            foundWordsByLength[l].push(word);
-        }
-    };
-    const ltrs = (l, letter) => {
-        foundWordsByLength[l - 1].forEach(bw.bind(null, l, letter));
-    };
-
-    for(let l = startWordLength + 1; l <= maxLength && foundWordsByLength[l - 1].length > 0; ++l) {
-        foundWordsByLength[l] = [];
-        // Remove all names that are shorter than the length we're looking for.
-        eligibleNames = eligibleNames.filter(filterNames.bind(null, l));
-
-        console.log(colors.blue(eligibleNames.length), "names left for length", colors.blue(l));
-
-        letters.forEach(ltrs.bind(null, l));
-
-        if(foundWordsByLength[l].length == 0) {
-            // No more words to be found, we're done here.
-            break;
-        }
-    }*/
-
     // Take out shorter strings with same occurence count as longer string that
     // they are a substring of.
-    for(let w = minLength + 1; w <= maxLength && foundWordsByLength[w].length > 0; ++w) {
+    info("Removing shorter duplicates");
+    for(let w = minLength + 1; w <= maxLength && Array.isArray(foundWordsByLength[w]) && foundWordsByLength[w].length > 0; ++w) {
         const prev = foundWordsByLength[w - 1];
         const curr = foundWordsByLength[w];
 
