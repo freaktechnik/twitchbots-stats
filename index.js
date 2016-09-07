@@ -74,23 +74,22 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
         wordLength = 1,
         count;
 
-    const filterEligibleNames = (word, n) => {
-        const i = n.indexOf(word);
-        if(i > -1) {
-            ++count;
-            const letter = n[i + word.length];
-            if(letter && alphabet.includes(letter)) {
-                futureLetters.add(letter);
-                return true;
-            }
-        }
-        return false;
-    };
     const lttrs = (b, letter) => {
         futureLetters.clear();
         const word = b + letter;
         count = 0;
-        futureNames = eligibleNames[b].filter(filterEligibleNames.bind(null, word));
+        futureNames = eligibleNames[b].filter((n) => {
+            const i = n.indexOf(word);
+            if(i > -1) {
+                ++count;
+                const letter = n[i + word.length];
+                if(letter && alphabet.includes(letter)) {
+                    futureLetters.add(letter);
+                    return true;
+                }
+            }
+            return false;
+        });
         if(count > minOccurences) {
             futureWords.push(word);
             eligibleNames[word] = futureNames;
@@ -114,10 +113,10 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
     };
     const wrds = (b) => {
         if(wordLength > 2) {
-            eligibleLetters[b].forEach(lttrs.bind(null, b));
+            eligibleLetters[b].forEach((l) => lttrs(b, l));
         }
         else {
-            letters.forEach(lttrs.bind(null, b));
+            letters.forEach((l) => lttrs(b, l));
         }
     };
 
