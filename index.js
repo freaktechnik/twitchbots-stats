@@ -119,12 +119,19 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
     // they are a substring of.
     info("Building duplicate free dictionary");
     const findings = new Map();
-    let l, prev, curr, longerWord;
+    let prev, curr, max, lts;
     const prevSearch = (word) => {
-        longerWord = curr.find((a) => a.includes(word));
-        l = counts[word];
-        if(!longerWord || l != counts[longerWord]) {
-            findings.set(word, l);
+        lts = eligibleLetters[word].length;
+        if(lts == 1) {
+            return;
+        }
+        else if(lts == 0) {
+            findings.set(word, counts[word]);
+            return;
+        }
+        max = counts[word];
+        if(!curr.some((a) => a.includes(word) && counts[a] == max)) {
+            findings.set(word, max);
         }
     };
     for(let w = minLength; w < wordLength && foundWordsByLength[w].length > 0; ++w) {
