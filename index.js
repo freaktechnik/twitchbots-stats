@@ -33,11 +33,7 @@ info("Loading all bots from twitchbots.info");
 const minLength = 5;
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const letters = alphabet.split('');
-const minOccurences = 3;
-
-let wastedTime = 0;
-let emptyCount = 0;
-let wordCount = 0;
+const minOccurences = 1;
 
 getBots().then((bots) => {
     const names = bots.map((b) => b.username).filter((n) => n.length >= minLength);
@@ -63,29 +59,44 @@ getBots().then((bots) => {
 
     info("Analysing word frequency");
 
+    const counts = {};
     let futureNames = [],
         words = Object.keys(eligibleNames),
         futureWords = [],
         wordLength = 1,
-        word;
+        eligibleLetters = {},
+        futureLetters = new Set();
 
-    const filterEligibleNames = (word, n) => n.includes(word);
+    const filterEligibleNames = (word, n) => {
+        const i = n.indexOf(word);
+        if(i != -1) {
+            ++counts[word];
+            const letter = n[i + word.length];
+            if(letter && alphabet.includes(letter)) {
+                futureLetters.add(letter);
+                return true;
+            }
+        }
+        return false;
+    }
     const lttrs = (b, letter) => {
-        ++wordCount;
-        const s = Date.now();
-        word = b + letter;
+        const word = b + letter;
+        futureLetters.clear();
+        counts[word] = 0;
         futureNames = eligibleNames[b].filter(filterEligibleNames.bind(null, word));
-        if(futureNames.length > minOccurences) {
+        if(counts[word] > minOccurences) {
             futureWords.push(word);
             eligibleNames[word] = futureNames;
-        }
-        else if(futureNames.length == 0 && word.length >= 4) {
-            wastedTime += Date.now() - s;
-            ++emptyCount;
+            eligibleLetters[word] = Array.from(futureLetters.values());
         }
     };
     const wrds = (b) => {
-        letters.forEach(lttrs.bind(null, b));
+        if(b.length > 1) {
+            eligibleLetters[b].forEach(lttrs.bind(null, b));
+        }
+        else {
+            letters.forEach(lttrs.bind(null, b));
+        }
     };
 
     while(words.length > 0) {
@@ -110,8 +121,8 @@ getBots().then((bots) => {
     let l, prev, curr, longerWord;
     const prevSearch = (word) => {
         longerWord = curr.find((a) => a.includes(word));
-        l = eligibleNames[word].length;
-        if(!longerWord || l != eligibleNames[longerWord].length) {
+        l = counts[word];
+        if(!longerWord || l != counts[longerWord]) {
             findings.set(word, l);
         }
     };
@@ -138,6 +149,4 @@ getBots().then((bots) => {
 
     console.log(table.toString());
     console.log("And it only took", colors.blue(((Date.now() - start) / 1000).toFixed(2)), "seconds to get here");
-    console.log(colors.blue((wastedTime/1000).toFixed(2)), "ms wasted on unued letters, that's", colors.green((wastedTime/(Date.now() - start)*100)+"%"));
-    console.log((emptyCount/wordCount*100).toFixed(2)+"%");
 });
