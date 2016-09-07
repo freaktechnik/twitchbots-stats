@@ -1,3 +1,5 @@
+"use strict";
+
 // Analysis paramters
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const letters = alphabet.split('');

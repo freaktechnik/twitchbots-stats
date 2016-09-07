@@ -15,7 +15,7 @@
     "eslint-plugin-freaktechnik": "^1.4.0"
   },
   "scripts": {
-    "test": "eslint index.js"
+    "test": "eslint index.js count-occurences.js"
   },
   "keywords": [
     "twitchbots",
