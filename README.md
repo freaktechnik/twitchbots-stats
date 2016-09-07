@@ -22,6 +22,8 @@ npm i
 node index.js
 ```
 
+There is a (in theory) re-usable module for the occurence calculation in `count-occurences.js`.
+
 ## Efficiency
 I'm not exactly sure what the complexity of it is, but it's probably somewhere
 in the `O(n * logn)` region.
