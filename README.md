@@ -29,7 +29,7 @@ in the `O(n * logn)` region.
 This is a table of runtimes I have experienced (all with node 6) on 4234 strings:
 
 Processor            | Minimum Length | Time [s]
-------------------------------------------------
+---------------------|----------------|---------
 Intel Pentium  N3520 | 3              | 1.8
 Intel Core i5 4460   | 3              | 0.5
 Intel Pentium N3520  | 5              | 1.8
