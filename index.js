@@ -30,9 +30,11 @@ const getBots = co.wrap(function* () {
 info("Loading all bots from twitchbots.info");
 
 // Analysis paramters
-const minLength = 5;
+const minLength = 6;
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const letters = alphabet.split('');
+// At least two matches, since one match is essentially equivalent to the whole
+// name of the bot it matches.
 const minOccurences = 1;
 
 getBots().then((bots) => {
@@ -91,7 +93,7 @@ getBots().then((bots) => {
         }
     };
     const wrds = (b) => {
-        if(b.length > 1) {
+        if(wordLength > 2) {
             eligibleLetters[b].forEach(lttrs.bind(null, b));
         }
         else {
@@ -126,9 +128,9 @@ getBots().then((bots) => {
             findings.set(word, l);
         }
     };
-    for(let w = minLength + 1; w < foundWordsByLength.length && Array.isArray(foundWordsByLength[w]) && foundWordsByLength[w].length > 0; ++w) {
-        prev = foundWordsByLength[w - 1];
-        curr = foundWordsByLength[w];
+    for(let w = minLength; w < foundWordsByLength.length && Array.isArray(foundWordsByLength[w]) && foundWordsByLength[w].length > 0; ++w) {
+        prev = foundWordsByLength[w];
+        curr = foundWordsByLength[w + 1] || [];
 
         prev.forEach(prevSearch);
     }
