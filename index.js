@@ -1,7 +1,6 @@
 "use strict";
 
 const twitchbots = require("twitchbots-node");
-const generator = require("combination-generator/generator");
 const Table = require("cli-table");
 const colors = require("colors/safe");
 const fs = require("mz/fs");
@@ -35,10 +34,9 @@ const minLength = 5;
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const letters = alphabet.split('');
 const minOccurences = 3;
-const startWordLength = 2;
 
 getBots().then((bots) => {
-    const findings = {};
+    const findings = new Map();
     const names = bots.map((b) => b.username).filter((n) => n.length >= minLength);
 
     // Two bots can't have the same name, so at least a letter is probably different.
@@ -48,50 +46,64 @@ getBots().then((bots) => {
 
     info("Generating base words");
 
-    const foundWordsByLength = (new Array(startWordLength)).fill(null);
-    const generatedWords = generator(letters, startWordLength, startWordLength);
-    foundWordsByLength.push(generatedWords);
+    const foundWordsByLength = [ null, null ];
 
-    let eligibleNames, futureNames, futureEligibleNames, words, futureWords;
+    const eligibleNames = {};
+    let futureNames = [],
+        words = [],
+        futureWords = [],
+        wordLength = 1;
+
+    names.forEach((n) => {
+        letters.forEach((l) => {
+            if(n.includes(l)) {
+                if(!eligibleNames[l]) {
+                    eligibleNames[l] = [ n ];
+                }
+                else {
+                    eligibleNames[l].push(n);
+                }
+            }
+        });
+    });
 
     info("Analysing word frequency");
 
     const filterEligibleNames = (word, n) => n.includes(word);
-    const getEligibleNames = (base) => Array.isArray(eligibleNames) ? eligibleNames : eligibleNames[base];
-    const getEligibleNamesLength = () => Array.isArray(eligibleNames) ? eligibleNames.length : Object.keys(eligibleNames).length;
     const lttrs = (b, letter) => {
         const word = b + letter;
-        futureNames = getEligibleNames(b).filter(filterEligibleNames.bind(null, word));
-        const count = futureNames.length;
-        if(count > minOccurences) {
-            if(word.length >= minLength) {
-                findings[word] = count;
+        futureNames = eligibleNames[b].filter(filterEligibleNames.bind(null, word));
+        if(futureNames.length > minOccurences) {
+            if(wordLength >= minLength) {
+                findings.set(word, futureNames.length);
             }
-            if(!Array.isArray(foundWordsByLength[word.length])) {
-                foundWordsByLength[word.length] = [];
-            }
-            foundWordsByLength[word.length].push(word);
             futureWords.push(word);
-            futureEligibleNames[word] = futureNames;
+            eligibleNames[word] = futureNames;
         }
     };
     const wrds = (b) => {
         letters.forEach(lttrs.bind(null, b));
     };
-    foundWordsByLength[startWordLength].forEach((word) => {
-        eligibleNames = names;
-        words = [ word ];
-        while(getEligibleNamesLength() > 0 && words.length > 0) {
-            futureEligibleNames = {};
-            futureWords = [];
-            words.forEach(wrds);
-            eligibleNames = futureEligibleNames;
-            words = futureWords;
+
+    words = Object.keys(eligibleNames);
+    while(words.length > 0) {
+        futureWords = [];
+        ++wordLength;
+        words.forEach(wrds);
+        if(futureWords.length > 0) {
+            if(foundWordsByLength.length == wordLength) {
+                foundWordsByLength.push(futureWords);
+            }
+            else {
+                foundWordsByLength[wordLength] = foundWordsByLength[wordLength].concat(futureWords);
+            }
         }
-    });
+        words = futureWords;
+    }
 
     // Take out shorter strings with same occurence count as longer string that
     // they are a substring of.
+
     info("Removing shorter duplicates");
     for(let w = minLength + 1; w <= maxLength && Array.isArray(foundWordsByLength[w]) && foundWordsByLength[w].length > 0; ++w) {
         const prev = foundWordsByLength[w - 1];
@@ -99,22 +111,22 @@ getBots().then((bots) => {
 
         for(const word of prev) {
             const longerWord = curr.find((a) => a.includes(word));
-            if(findings[word] == findings[longerWord]) {
-                delete findings[word];
+            if(findings.get(word) == findings.get(longerWord)) {
+                findings.delete(word);
             }
         }
     }
 
     info("Sorting results");
-    const sortedResults = Object.keys(findings).sort((a, b) => findings[b] - findings[a]).slice(0, 20);
+    const sortedResults = Array.from(findings.keys()).sort((a, b) => findings.get(b) - findings.get(a)).slice(0, 20);
 
     info("Generating nice output table");
     const table = new Table({
         head: [ "Word", "Count", "Percentage" ]
     });
 
-    table.push(...sortedResults.map((n) => [ n, findings[n], ((findings[n] / bots.length) * 100).toFixed(2) + "%" ]));
+    table.push.apply(table, sortedResults.map((n) => [ n, findings.get(n), ((findings.get(n) / bots.length) * 100).toFixed(2) + "%" ]));
 
     console.log(table.toString());
-    console.log("And it only took", colors.blue(Math.floor((Date.now() - start) / 1000)), "seconds to get here");
+    console.log("And it only took", colors.blue(((Date.now() - start) / 1000).toFixed(2)), "seconds to get here");
 });

@@ -7,7 +7,6 @@
     "cli-table": "^0.3.1",
     "co": "^4.6.0",
     "colors": "^1.1.2",
-    "combination-generator": "^0.1.0",
     "mz": "^2.4.0",
     "twitchbots-node": "^1.0.1"
   },
