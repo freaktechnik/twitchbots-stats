@@ -22,6 +22,28 @@ npm i
 node index.js
 ```
 
+## Efficiency
+I'm not exactly sure what the complexity of it is, but it's probably somewhere
+in the `O(n * logn)` region.
+
+This is a table of runtimes I have experienced (all with node 6) on 4234 strings:
+
+Processor            | Minimum Length | Time [s]
+------------------------------------------------
+Intel Pentium  N3520 | 3              | 1.8
+Intel Core i5 4460   | 3              | 0.5
+Intel Pentium N3520  | 5              | 1.8
+Intel Core i5 4460   | 5              | 0.5
+Intel Pentium N3520  | 11             | 1.0
+Intel Core i5 4460   | 11             | 0.2
+Intel Pentium N3520  | 14             | 0.4
+Intel Core i5 4460   | 14             | 0.1
+
+These numbers - despite both CPUs being able to adjust their clock speed - are
+pretty stable. As can be seen, the big speed improvements happen with bigger
+numbers where the amount of strings is reduced considerably - at minimum length
+11 there are about a quarter of the strings left.
+
 ## Thanks
 Thanks to liori from the tatoeba room for reminding me, that I should fix my
 traversal order. Without them this would be way slower (like 1000x slower or
