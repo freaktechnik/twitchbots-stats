@@ -39,8 +39,7 @@ const letters = alphabet.split('');
 const getOccurences = (allNames, minLength, minOccurences = 1) => {
     info("Generating base support data");
 
-    const foundWordsByLength = [ null, null ],
-        eligibleNames = {};
+    const eligibleNames = {};
 
     allNames.forEach((n) => {
         if(n.length < minLength) {
@@ -115,14 +114,6 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
         futureWords = [];
         ++wordLength;
         words.forEach(wrds);
-        if(futureWords.length > 0) {
-            if(foundWordsByLength.length == wordLength) {
-                foundWordsByLength.push(futureWords);
-            }
-            else {
-                foundWordsByLength[wordLength] = foundWordsByLength[wordLength].concat(futureWords);
-            }
-        }
         words = futureWords;
     }
 
