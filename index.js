@@ -38,7 +38,15 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
     info("Generating base support data");
     time = Date.now();
 
-    const eligibleNames = {};
+    const eligibleNames = {},
+        counts = {},
+        startCounting = minLength == 1;
+
+    if(startCounting) {
+        letters.forEach((l) => {
+            counts[l] = 0;
+        });
+    }
 
     allNames.forEach((n) => {
         if(n.length < minLength) {
@@ -52,14 +60,16 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
                 else {
                     eligibleNames[l].push(n);
                 }
+                if(startCounting) {
+                    ++counts[l];
+                }
             }
         });
     });
 
     info("Analysing word frequency");
 
-    const counts = {},
-        eligibleLetters = {},
+    const eligibleLetters = {},
         futureLetters = new Set();
     let futureNames,
         words = Object.keys(eligibleNames),
@@ -94,11 +104,11 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
 
                 // Prune shorter substrings with the same count.
                 if(wordLength > minLength) {
-                    if(eligibleLetters[b].length == 1) {
+                    if(counts[b] == count) {
                         delete counts[b];
                     }
                     const a = word.substr(1);
-                    if(counts[a] == counts[word]) {
+                    if(counts[a] == count) {
                         delete counts[a];
                     }
                 }
