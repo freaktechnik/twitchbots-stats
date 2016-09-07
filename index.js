@@ -6,8 +6,6 @@ const colors = require("colors/safe");
 const fs = require("mz/fs");
 const co = require("co");
 
-const start = Date.now();
-
 const cacheFile = "bots.json";
 
 const info = (str) => console.log(colors.grey(str + "..."));
@@ -29,7 +27,7 @@ const getBots = co.wrap(function* () {
     }
 });
 
-info("Loading all bots from twitchbots.info");
+let time;
 
 // Analysis paramters
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
@@ -38,6 +36,7 @@ const letters = alphabet.split('');
 // name of the bot it matches.
 const getOccurences = (allNames, minLength, minOccurences = 1) => {
     info("Generating base support data");
+    time = Date.now();
 
     const eligibleNames = {};
 
@@ -122,8 +121,12 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
         words = futureWords;
     }
 
+    time = Date.now() - time;
+
     return counts;
 };
+
+info("Loading all bots from twitchbots.info");
 
 getBots().then((bots) => {
     info("Counting");
@@ -144,5 +147,5 @@ getBots().then((bots) => {
     ]));
 
     console.log(table.toString());
-    console.log("And it only took", colors.blue(((Date.now() - start) / 1000).toFixed(2)), "seconds to get here");
+    console.log("And it only took", colors.blue((time / 1000).toFixed(2)), "seconds to get here");
 }).catch((e) => console.warn(e));
