@@ -89,6 +89,13 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
             futureWords.push(word);
             eligibleNames[word] = futureNames;
             eligibleLetters[word] = Array.from(futureLetters.values());
+
+            if(counts[b] == counts[word]) {
+                delete counts[b];
+            }
+            if(counts[word.substr(1)] == counts[word]) {
+                delete counts[word.substr(1)];
+            }
         }
     };
     const wrds = (b) => {
@@ -115,33 +122,13 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
         words = futureWords;
     }
 
-    // Take out shorter strings with same occurence count as longer string that
-    // they are a substring of.
-    info("Building duplicate free dictionary");
-    const findings = new Map();
-    let prev, curr, max, lts;
-    const prevSearch = (word) => {
-        lts = eligibleLetters[word].length;
-        if(lts == 1) {
-            return;
+    for(const n in counts) {
+        if(n.length < minLength) {
+            delete counts[n];
         }
-        else if(lts == 0) {
-            findings.set(word, counts[word]);
-            return;
-        }
-        max = counts[word];
-        if(!curr.some((a) => a.includes(word) && counts[a] == max)) {
-            findings.set(word, max);
-        }
-    };
-    for(let w = minLength; w < wordLength && foundWordsByLength[w].length > 0; ++w) {
-        prev = foundWordsByLength[w];
-        curr = foundWordsByLength[w + 1] || [];
-
-        prev.forEach(prevSearch);
     }
 
-    return findings;
+    return counts;
 };
 
 getBots().then((bots) => {
@@ -149,7 +136,7 @@ getBots().then((bots) => {
     const findings = getOccurences(bots, 3);
 
     info("Sorting results");
-    const sortedResults = Array.from(findings.keys()).sort((a, b) => findings.get(b) - findings.get(a)).slice(0, 20);
+    const sortedResults = Object.keys(findings).sort((a, b) => findings[b] - findings[a]).slice(0, 20);
 
     info("Generating nice output table");
     const table = new Table({
@@ -158,8 +145,8 @@ getBots().then((bots) => {
 
     table.push.apply(table, sortedResults.map((n) => [
         n,
-        findings.get(n),
-        ((findings.get(n) / bots.length) * 100).toFixed(2) + "%"
+        findings[n],
+        ((findings[n] / bots.length) * 100).toFixed(2) + "%"
     ]));
 
     console.log(table.toString());
