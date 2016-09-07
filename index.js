@@ -90,11 +90,15 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
             eligibleNames[word] = futureNames;
             eligibleLetters[word] = Array.from(futureLetters.values());
 
-            if(counts[b] == counts[word]) {
-                delete counts[b];
-            }
-            if(counts[word.substr(1)] == counts[word]) {
-                delete counts[word.substr(1)];
+            // Prune shorter substrings with the same count.
+            if(b.length > 1) {
+                if(eligibleLetters[b].length == 1) {
+                    delete counts[b];
+                }
+                const a = word.substr(1);
+                if(counts[a] == counts[word]) {
+                    delete counts[a];
+                }
             }
         }
     };
