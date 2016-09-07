@@ -28,16 +28,12 @@ in the `O(n * logn)` region.
 
 This is a table of runtimes I have experienced (all with node 6) on 4234 strings:
 
-Processor            | Minimum Length | Time [s]
----------------------|----------------|---------
-Intel Pentium  N3520 | 3              | 1.8
-Intel Core i5 4460   | 3              | 0.5
-Intel Pentium N3520  | 5              | 1.8
-Intel Core i5 4460   | 5              | 0.5
-Intel Pentium N3520  | 11             | 1.0
-Intel Core i5 4460   | 11             | 0.2
-Intel Pentium N3520  | 14             | 0.4
-Intel Core i5 4460   | 14             | 0.1
+Minimum Length | Intel Pentium N3520 Time [s] | Intel Core i5 4460 Time [s]
+---------------|------------------------------|----------------------------
+3              | 1.8                          | 0.5
+5              | 1.8                          | 0.5
+11             | 1.0                          | 0.2
+14             | 0.4                          | 0.1
 
 These numbers - despite both CPUs being able to adjust their clock speed - are
 pretty stable. As can be seen, the big speed improvements happen with bigger
