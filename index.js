@@ -22,31 +22,30 @@ const getBots = co.wrap(function* () {
     else {
         info("Fetching from the twitchbots.info API");
         const bots = yield twitchbots.getAllBots();
-        yield fs.writeFile(cacheFile, JSON.stringify(bots));
-        return bots;
+        const names = bots.map((b) => b.username);
+        info("Caching it to disk");
+        yield fs.writeFile(cacheFile, JSON.stringify(names));
+        return names;
     }
 });
 
 info("Loading all bots from twitchbots.info");
 
 // Analysis paramters
-const minLength = 6;
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const letters = alphabet.split('');
 // At least two matches, since one match is essentially equivalent to the whole
 // name of the bot it matches.
-const minOccurences = 1;
+const getOccurences = (allNames, minLength, minOccurences = 1) => {
+    info("Generating base support data");
 
-getBots().then((bots) => {
-    const names = bots.map((b) => b.username).filter((n) => n.length >= minLength);
+    const foundWordsByLength = [ null, null ],
+        eligibleNames = {};
 
-    info("Generating base words");
-
-    const foundWordsByLength = [ null, null ];
-
-    const eligibleNames = {};
-
-    names.forEach((n) => {
+    allNames.forEach((n) => {
+        if(n.length < minLength) {
+            return;
+        }
         letters.forEach((l) => {
             if(n.includes(l)) {
                 if(!eligibleNames[l]) {
@@ -61,17 +60,17 @@ getBots().then((bots) => {
 
     info("Analysing word frequency");
 
-    const counts = {};
-    let futureNames = [],
-        words = Object.keys(eligibleNames),
-        futureWords = [],
-        wordLength = 1,
+    const counts = {},
         eligibleLetters = {},
         futureLetters = new Set();
+    let futureNames,
+        words = Object.keys(eligibleNames),
+        futureWords = [],
+        wordLength = 1;
 
     const filterEligibleNames = (word, n) => {
         const i = n.indexOf(word);
-        if(i != -1) {
+        if(i > -1) {
             ++counts[word];
             const letter = n[i + word.length];
             if(letter && alphabet.includes(letter)) {
@@ -80,10 +79,10 @@ getBots().then((bots) => {
             }
         }
         return false;
-    }
+    };
     const lttrs = (b, letter) => {
-        const word = b + letter;
         futureLetters.clear();
+        const word = b + letter;
         counts[word] = 0;
         futureNames = eligibleNames[b].filter(filterEligibleNames.bind(null, word));
         if(counts[word] > minOccurences) {
@@ -128,12 +127,19 @@ getBots().then((bots) => {
             findings.set(word, l);
         }
     };
-    for(let w = minLength; w < foundWordsByLength.length && Array.isArray(foundWordsByLength[w]) && foundWordsByLength[w].length > 0; ++w) {
+    for(let w = minLength; w < wordLength && foundWordsByLength[w].length > 0; ++w) {
         prev = foundWordsByLength[w];
         curr = foundWordsByLength[w + 1] || [];
 
         prev.forEach(prevSearch);
     }
+
+    return findings;
+};
+
+getBots().then((bots) => {
+    info("Counting");
+    const findings = getOccurences(bots, 3);
 
     info("Sorting results");
     const sortedResults = Array.from(findings.keys()).sort((a, b) => findings.get(b) - findings.get(a)).slice(0, 20);
@@ -151,4 +157,4 @@ getBots().then((bots) => {
 
     console.log(table.toString());
     console.log("And it only took", colors.blue(((Date.now() - start) / 1000).toFixed(2)), "seconds to get here");
-});
+}).catch((e) => console.warn(e));
