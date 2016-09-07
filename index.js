@@ -65,12 +65,13 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
     let futureNames,
         words = Object.keys(eligibleNames),
         futureWords = [],
-        wordLength = 1;
+        wordLength = 1,
+        count;
 
     const filterEligibleNames = (word, n) => {
         const i = n.indexOf(word);
         if(i > -1) {
-            ++counts[word];
+            ++count;
             const letter = n[i + word.length];
             if(letter && alphabet.includes(letter)) {
                 futureLetters.add(letter);
@@ -82,21 +83,25 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
     const lttrs = (b, letter) => {
         futureLetters.clear();
         const word = b + letter;
-        counts[word] = 0;
+        count = 0;
         futureNames = eligibleNames[b].filter(filterEligibleNames.bind(null, word));
-        if(counts[word] > minOccurences) {
+        if(count > minOccurences) {
             futureWords.push(word);
             eligibleNames[word] = futureNames;
             eligibleLetters[word] = Array.from(futureLetters.values());
 
-            // Prune shorter substrings with the same count.
-            if(b.length > 1) {
-                if(eligibleLetters[b].length == 1) {
-                    delete counts[b];
-                }
-                const a = word.substr(1);
-                if(counts[a] == counts[word]) {
-                    delete counts[a];
+            if(wordLength >= minLength) {
+                counts[word] = count;
+
+                // Prune shorter substrings with the same count.
+                if(wordLength > minLength) {
+                    if(eligibleLetters[b].length == 1) {
+                        delete counts[b];
+                    }
+                    const a = word.substr(1);
+                    if(counts[a] == counts[word]) {
+                        delete counts[a];
+                    }
                 }
             }
         }
@@ -115,12 +120,6 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
         ++wordLength;
         words.forEach(wrds);
         words = futureWords;
-    }
-
-    for(const n in counts) {
-        if(n.length < minLength) {
-            delete counts[n];
-        }
     }
 
     return counts;
