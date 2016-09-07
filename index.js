@@ -27,8 +27,6 @@ const getBots = co.wrap(function* () {
     }
 });
 
-let time;
-
 // Analysis paramters
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const letters = alphabet.split('');
@@ -36,7 +34,6 @@ const letters = alphabet.split('');
 // name of the bot it matches.
 const getOccurences = (allNames, minLength, minOccurences = 1) => {
     info("Generating base support data");
-    time = Date.now();
 
     const eligibleNames = {},
         counts = {},
@@ -131,8 +128,6 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
         words = futureWords;
     }
 
-    time = Date.now() - time;
-
     return counts;
 };
 
@@ -140,7 +135,9 @@ info("Loading all bots from twitchbots.info");
 
 getBots().then((bots) => {
     info("Counting");
+    let time = Date.now();
     const findings = getOccurences(bots, 3);
+    time = Date.now() - time;
 
     info("Sorting results");
     const sortedResults = Object.keys(findings).sort((a, b) => findings[b] - findings[a]).slice(0, 20);
