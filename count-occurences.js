@@ -97,12 +97,8 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
         }
     };
     const wrds = (b) => {
-        if(wordLength > 2) {
-            eligibleLetters[b].forEach((l) => lttrs(b, l));
-        }
-        else {
-            letters.forEach((l) => lttrs(b, l));
-        }
+        const a = wordLength > 2 ? eligibleLetters[b] : letters;
+        a.forEach((l) => lttrs(b, l));
     };
 
     while(words.length > 0) {
