@@ -1,8 +1,9 @@
 "use strict";
 
-// Analysis paramters
+// Analysis base data
 const alphabet = 'abcdefghijklmnopqrstuvwxyz',
     letters = alphabet.split('');
+
 /**
  * Counts the occurences of substrings within a list of lower-case strings.
  * Results are deduplicated to remove shorter strings with same occurence. Only
@@ -70,6 +71,7 @@ const getOccurences = (allNames, minLength, minOccurences = 2) => {
             const i = n.indexOf(word);
             if(i > -1) {
                 ++count;
+                // Get next character in word and save it for the next round.
                 const l = n[i + word.length];
                 if(l && alphabet.includes(l)) {
                     futureLetters.add(l);
@@ -79,6 +81,7 @@ const getOccurences = (allNames, minLength, minOccurences = 2) => {
             return false;
         });
         if(count >= minOccurences) {
+            // Only visit this word again, if there's a chance of longer versions.
             if(futureLetters.size > 0) {
                 futureWords.push(word);
                 eligibleNames[word] = futureNames;
