@@ -71,7 +71,7 @@ const getOccurences = (allNames, minLength, minOccurences = 2) => {
             if(i > -1) {
                 ++count;
                 const l = n[i + word.length];
-                if(letter && alphabet.includes(l)) {
+                if(l && alphabet.includes(l)) {
                     futureLetters.add(l);
                     return true;
                 }
