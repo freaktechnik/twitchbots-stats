@@ -1,8 +1,8 @@
 "use strict";
 
 // Analysis paramters
-const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-const letters = alphabet.split('');
+const alphabet = 'abcdefghijklmnopqrstuvwxyz',
+    letters = alphabet.split('');
 /**
  * Counts the occurences of substrings within a list of lower-case strings.
  * Results are deduplicated to remove shorter strings with same occurence. Only
@@ -46,7 +46,7 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
     // If we count the occurences of single letters it's faster to do that in
     // O(n*26) than to do it in the tree search.
     if(minLength == 1) {
-        for(let l in eligibleNames) {
+        for(const l in eligibleNames) {
             counts[l] = eligibleNames[l].length;
         }
     }
