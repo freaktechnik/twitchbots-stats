@@ -15,7 +15,7 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz',
  * @param {number} minLength - Minimum length of the substrings to find. Must
  *                             be 1 or bigger. Increasing this makes this
  *                             run faster.
- * @param {number} [minOccurences=1] - Minimum number of occurences to look for.
+ * @param {number} [minOccurences=2] - Minimum number of occurences to look for.
  *                                     increasing this may significantly improve
  *                                     speed.
  * @returns {Object.<string, number>} Map of substrings and their occurence
@@ -25,7 +25,7 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz',
  *                                    followed by "r", it will only contain
  *                                    "alr" and not "al".
  */
-const getOccurences = (allNames, minLength, minOccurences = 1) => {
+const getOccurences = (allNames, minLength, minOccurences = 2) => {
     const eligibleNames = {},
         counts = {};
 
@@ -78,7 +78,7 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
             }
             return false;
         });
-        if(count > minOccurences) {
+        if(count >= minOccurences) {
             if(futureLetters.size > 0) {
                 futureWords.push(word);
                 eligibleNames[word] = futureNames;
