@@ -4,9 +4,11 @@
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const letters = alphabet.split('');
 /**
- * Counts the occurences of substrings within a list of strings.
+ * Counts the occurences of substrings within a list of lower-case strings.
+ * Results are deduplicated to remove shorter strings with same occurence. Only
+ * builds substrings out of lower-case latin letters (a-z).
  *
- * @param {Array.<string>} allNames - Names to search in.
+ * @param {Array.<string>} allNames - Lower-case strings to search in.
  * @param {number} minLength - Minimum length of the substrings to find. Must
  *                             be 1 or bigger. Increasing this makes this
  *                             run faster.
