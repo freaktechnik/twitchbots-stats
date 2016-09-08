@@ -70,9 +70,9 @@ const getOccurences = (allNames, minLength, minOccurences = 2) => {
             const i = n.indexOf(word);
             if(i > -1) {
                 ++count;
-                const letter = n[i + word.length];
-                if(letter && alphabet.includes(letter)) {
-                    futureLetters.add(letter);
+                const l = n[i + word.length];
+                if(letter && alphabet.includes(l)) {
+                    futureLetters.add(l);
                     return true;
                 }
             }
