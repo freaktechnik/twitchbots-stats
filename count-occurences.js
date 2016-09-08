@@ -8,6 +8,9 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz',
  * Results are deduplicated to remove shorter strings with same occurence. Only
  * builds substrings out of lower-case latin letters (a-z).
  *
+ * The tree is traversed per generation, so per iteration all children to the
+ * previous leaves are checked.
+ *
  * @param {Array.<string>} allNames - Lower-case strings to search in.
  * @param {number} minLength - Minimum length of the substrings to find. Must
  *                             be 1 or bigger. Increasing this makes this
@@ -76,9 +79,11 @@ const getOccurences = (allNames, minLength, minOccurences = 1) => {
             return false;
         });
         if(count > minOccurences) {
-            futureWords.push(word);
-            eligibleNames[word] = futureNames;
-            eligibleLetters[word] = Array.from(futureLetters.values());
+            if(futureLetters.size > 0) {
+                futureWords.push(word);
+                eligibleNames[word] = futureNames;
+                eligibleLetters[word] = Array.from(futureLetters.values());
+            }
 
             if(wordLength >= minLength) {
                 counts[word] = count;

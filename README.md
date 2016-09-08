@@ -28,6 +28,16 @@ There is a (in theory) re-usable module for the occurence calculation in `count-
 I'm not exactly sure what the complexity of it is, but it's probably somewhere
 in the `O(n * logn)` region.
 
+The tree is traversed by generation, so all nodes on the same level are visited
+in one loop, then the next ones etc. This means the algorithm builds memory for
+each substring of strings that still included it and of letters that may follow
+it. I believe it is optimized so the only performance benefits to be gained may
+fit in the following categories:
+
+ - Different traversal method
+ - Less read/write intensive data structures
+ - Optimization of V8 edge cases
+
 This is a table of runtimes I have experienced (all with node 6) on 4234 strings:
 
 Minimum Length | Intel Pentium N3520 Time [s] | Intel Core i5 4460 Time [s]
