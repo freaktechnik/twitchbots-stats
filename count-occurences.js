@@ -2,7 +2,11 @@
 
 // Analysis base data
 const alphabet = 'abcdefghijklmnopqrstuvwxyz',
-    letters = alphabet.split('');
+    letters = alphabet.split(''),
+    MIN_OCCURENCES = 2,
+    SINGLE_LETTER = 1,
+    START = 0,
+    NO_RESULT = -1;
 
 /**
  * Counts the occurences of substrings within a list of lower-case strings.
@@ -26,7 +30,7 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz',
  *                                    followed by "r", it will only contain
  *                                    "alr" and not "al".
  */
-const getOccurences = (allNames, minLength, minOccurences = 2) => {
+const getOccurences = (allNames, minLength, minOccurences = MIN_OCCURENCES) => {
     const eligibleNames = {},
         counts = {};
 
@@ -49,7 +53,7 @@ const getOccurences = (allNames, minLength, minOccurences = 2) => {
 
     // If we count the occurences of single letters it's faster to do that in
     // O(n*26) than to do it in the tree search.
-    if(minLength == 1) {
+    if(minLength === SINGLE_LETTER) {
         for(const l in eligibleNames) {
             counts[l] = eligibleNames[l].length;
         }
@@ -60,16 +64,16 @@ const getOccurences = (allNames, minLength, minOccurences = 2) => {
     let futureNames,
         words = Object.keys(eligibleNames),
         futureWords = [],
-        wordLength = 1,
+        wordLength = SINGLE_LETTER,
         count;
 
     const lttrs = (b, letter) => {
         futureLetters.clear();
         const word = b + letter;
-        count = 0;
+        count = START;
         futureNames = eligibleNames[b].filter((n) => {
             const i = n.indexOf(word);
-            if(i > -1) {
+            if(i > NO_RESULT) {
                 ++count;
                 // Get next character in word and save it for the next round.
                 const l = n[i + word.length];
@@ -82,7 +86,7 @@ const getOccurences = (allNames, minLength, minOccurences = 2) => {
         });
         if(count >= minOccurences) {
             // Only visit this word again, if there's a chance of longer versions.
-            if(futureLetters.size > 0) {
+            if(futureLetters.size) {
                 futureWords.push(word);
                 eligibleNames[word] = futureNames;
                 eligibleLetters[word] = Array.from(futureLetters.values());
@@ -96,7 +100,7 @@ const getOccurences = (allNames, minLength, minOccurences = 2) => {
                     if(counts[b] == count) {
                         delete counts[b];
                     }
-                    const a = word.substr(1);
+                    const a = word.substr(SINGLE_LETTER);
                     if(counts[a] == count) {
                         delete counts[a];
                     }
@@ -105,14 +109,16 @@ const getOccurences = (allNames, minLength, minOccurences = 2) => {
         }
     };
     const wrds = (b) => {
-        const a = wordLength > 2 ? eligibleLetters[b] : letters;
+        const a = wordLength > MIN_OCCURENCES ? eligibleLetters[b] : letters;
         a.forEach((l) => lttrs(b, l));
     };
 
-    while(words.length > 0) {
+    while(words.length) {
         futureWords = [];
         ++wordLength;
-        words.forEach(wrds);
+        for(const b of words) {
+            wrds(b);
+        }
         words = futureWords;
     }
 
