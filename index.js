@@ -20,6 +20,9 @@ const twitchbots = require("twitchbots-node"),
     TO_PERCENT = 100,
     MS_TO_S = 1000,
     PRECISION = 2,
+    /**
+     * @returns {[string]} All bot usernames on twitchbots.info.
+     */
     getBots = async () => {
         let noError = true;
         try {

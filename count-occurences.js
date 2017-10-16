@@ -16,19 +16,18 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz',
  * The tree is traversed per generation, so per iteration all children to the
  * previous leaves are checked.
  *
- * @param {Array.<string>} allNames - Lower-case strings to search in.
+ * @param {[string]} allNames - Lower-case strings to search in.
  * @param {number} minLength - Minimum length of the substrings to find. Must
  *                             be 1 or bigger. Increasing this makes this
  *                             run faster.
  * @param {number} [minOccurences=2] - Minimum number of occurences to look for.
  *                                     increasing this may significantly improve
  *                                     speed.
- * @returns {Object.<string, number>} Map of substrings and their occurence
- *                                    count. Only contains the longest variant
- *                                    of a substring if their occurence is the
- *                                    same. So for example if all "al" are
- *                                    followed by "r", it will only contain
- *                                    "alr" and not "al".
+ * @returns {Object.<number>} Map of substrings and their occurence count. Only
+ *                            contains the longest variant of a substring if
+ *                            their occurence is the same. So for example if all
+ *                            "al" are followed by "r", it will only contain
+ *                            "alr" and not "al".
  */
 const getOccurences = (allNames, minLength, minOccurences = MIN_OCCURENCES) => {
     const eligibleNames = {},
