@@ -92,5 +92,5 @@ const twitchbots = require("twitchbots-node"),
 
 tasks.run().then((ctx) => {
     console.log(ctx.table);
-    console.log(chalk`And it only took {blue ${(ctx.time / MS_TO_S).toFixed(PRECISION)}} seconds to get here`);
+    console.log(chalk`And it only took {blue ${(ctx.time / MS_TO_S).toFixed(PRECISION)}} seconds to count the occurrences`);
 }).catch(console.error);
