@@ -4,13 +4,14 @@
   "description": "Analyses the bot usernames",
   "main": "index.js",
   "dependencies": {
-    "chalk": "^2.3.2",
+    "chalk": "^2.4.1",
     "cli-table": "^0.3.1",
+    "listr": "^0.14.2",
     "twitchbots-node": "^1.0.1"
   },
   "devDependencies": {
-    "@freaktechnik/eslint-config-node": "^5.2.1",
-    "eslint": "^4.19.1"
+    "@freaktechnik/eslint-config-node": "^6.5.4",
+    "eslint": "^5.9.0"
   },
   "scripts": {
     "test": "eslint index.js count-occurences.js",
@@ -27,7 +28,7 @@
   "author": "Martin Giger (https://humanoids.be)",
   "license": "MIT",
   "engines": {
-    "node": ">= 8.6.0"
+    "node": ">= 11.0.0"
   },
   "repository": {
     "type": "git",
